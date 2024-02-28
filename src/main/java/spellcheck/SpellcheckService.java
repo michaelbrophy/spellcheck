@@ -66,6 +66,9 @@ public class SpellcheckService {
             return wordOneLength;
         }
 
+        String wordOneLowercase = wordOne.toLowerCase();
+        String wordTwoLowercase = wordTwo.toLowerCase();
+
         int[][] levenshteinDistance = new int[wordOneLength + 1][wordTwoLength + 1];
 
         for (int[] row : levenshteinDistance) {
@@ -82,7 +85,7 @@ public class SpellcheckService {
 
         for (int j = 1; j <= wordTwoLength; j++) {
             for (int i = 1; i <= wordOneLength; i++) {
-                int substitutionValue = wordOne.charAt(i - 1) == wordTwo.charAt(j - 1) ? 0 : 1;
+                int substitutionValue = wordOneLowercase.charAt(i - 1) == wordTwoLowercase.charAt(j - 1) ? 0 : 1;
 
                 levenshteinDistance[i][j] = minimum(
                         levenshteinDistance[i - 1][j] + 1,
