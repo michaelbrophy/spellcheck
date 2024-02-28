@@ -1,28 +1,32 @@
 package spellcheck;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
-import java.util.stream.Collectors;
 
 public class Main {
     public static void main(String[] args) {
+
+        long startTime = System.currentTimeMillis();
 
         String dictionaryFilePath = args[0];
         String inputFilePath = args[1];
 
         DictionaryService dictionaryService = new DictionaryService(dictionaryFilePath);
 
-        // Get all Misspelled words from in writefile.txt
-        List<String> allInputFileWords = FileUtility.parseFileToWords(inputFilePath);
+        InputFileService inputFileService = new InputFileService(inputFilePath);
 
-        List<String> allMisspelledWords = allInputFileWords
-                .stream()
-                .filter(word -> !dictionaryService.isWordValid(word))
-                .toList();
+        SpellcheckService spellcheckService = new SpellcheckService(dictionaryService, inputFileService);
 
-        System.out.println(String.join(", ", allMisspelledWords));
+        for (InputFileWord inputFileWord : spellcheckService.getAllMisspelledWords()) {
+            inputFileWord.setSuggestedWords(spellcheckService.getSuggestedWords(inputFileWord));
+        }
+
+        long endTime = System.currentTimeMillis();
+
+        for (InputFileWord inputFileWord : spellcheckService.getAllMisspelledWords()) {
+
+            System.out.println(inputFileWord.toString());
+        }
+
+        System.out.println("This process took " + (endTime - startTime) + " milliseconds.");
     }
 }
