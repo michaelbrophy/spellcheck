@@ -16,6 +16,9 @@ public class InputFileServiceTest {
 
         List<InputFileWord> inputFileWords = new ArrayList<>();
 
+
+        // This is a bit messy, and could be cleaned up by pulling this data in through a file, but given the amount of
+        // time worked on it, I thought this would be a fine enough and readable solution
         inputFileWords.add(new InputFileWord("Once", 1, 1));
         inputFileWords.add(new InputFileWord("upon", 1, 6));
         inputFileWords.add(new InputFileWord("a", 1, 11));
