@@ -1,8 +1,6 @@
 package spellcheck;
 
-import java.util.List;
-
-public class Main {
+public class SpellChecker {
     public static void main(String[] args) {
 
         long startTime = System.currentTimeMillis();
@@ -14,18 +12,12 @@ public class Main {
 
         InputFileService inputFileService = new InputFileService(inputFilePath);
 
-        SpellcheckService spellcheckService = new SpellcheckService(dictionaryService, inputFileService);
+        SpellCheckService spellcheckService = new SpellCheckService(dictionaryService, inputFileService);
 
-        for (InputFileWord inputFileWord : spellcheckService.getAllMisspelledWords()) {
-            inputFileWord.setSuggestedWords(spellcheckService.getSuggestedWords(inputFileWord));
-        }
+        spellcheckService.getAllMisspelledWords()
+                .forEach(System.out::println);
 
         long endTime = System.currentTimeMillis();
-
-        for (InputFileWord inputFileWord : spellcheckService.getAllMisspelledWords()) {
-
-            System.out.println(inputFileWord.toString());
-        }
 
         System.out.println("This process took " + (endTime - startTime) + " milliseconds.");
     }

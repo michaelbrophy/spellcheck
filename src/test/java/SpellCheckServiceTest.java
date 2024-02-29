@@ -1,12 +1,12 @@
 import org.junit.Test;
 import spellcheck.DictionaryService;
 import spellcheck.InputFileService;
-import spellcheck.SpellcheckService;
+import spellcheck.SpellCheckService;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
-public class SpellcheckServiceTest {
+public class SpellCheckServiceTest {
 
     @Test
     public void testCalculateLevenshteinDistance() {
@@ -14,7 +14,7 @@ public class SpellcheckServiceTest {
         DictionaryService mockDictionaryService = mock(DictionaryService.class);
         InputFileService mockInputFileService = mock(InputFileService.class);
 
-        SpellcheckService spellcheckService = new SpellcheckService(mockDictionaryService, mockInputFileService);
+        SpellCheckService spellcheckService = new SpellCheckService(mockDictionaryService, mockInputFileService);
 
         int result1 = spellcheckService.calculateLevenshteinDistance("sitting", "kitten");
         assertEquals(3, result1);
@@ -27,5 +27,8 @@ public class SpellcheckServiceTest {
 
         int result4 = spellcheckService.calculateLevenshteinDistance("kitten", "");
         assertEquals(6, result4);
+
+        int result5 = spellcheckService.calculateLevenshteinDistance("siTTIng", "kIttEn");
+        assertEquals(3, result5);
     }
 }

@@ -12,11 +12,11 @@ public class DictionaryService {
     public DictionaryService(String filePath) {
         this.filePath = filePath;
 
-        this.allValidWords = generateAllValidWordsFromFile(filePath);
+        this.allValidWords = generateAllValidWordsFromFile();
     }
 
     // Parse a dictionary file containing one word per line
-    private Set<String> generateAllValidWordsFromFile(String filePath) {
+    private Set<String> generateAllValidWordsFromFile() {
 
         Set<String> words = new HashSet<>();
 
@@ -25,8 +25,7 @@ public class DictionaryService {
             Scanner scanner = new Scanner(file);
 
             while (scanner.hasNextLine()) {
-                String word = scanner.nextLine();
-                words.add(word);
+                words.add(scanner.nextLine());
             }
 
         } catch (FileNotFoundException fnfe) {
@@ -36,15 +35,15 @@ public class DictionaryService {
         return words;
     }
 
-    public boolean isWordValid(String word) {
+    public boolean isWordInDictionary(String word) {
         return allValidWords.contains(word);
     }
 
     public String getFilePath() {
-        return this.filePath;
+        return filePath;
     }
 
     public Set<String> getAllValidWords() {
-        return this.allValidWords;
+        return Collections.unmodifiableSet(allValidWords);
     }
 }
