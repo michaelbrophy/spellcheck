@@ -12,9 +12,8 @@ public class SpellCheckServiceTest {
     public void testCalculateLevenshteinDistance() {
 
         DictionaryService mockDictionaryService = mock(DictionaryService.class);
-        InputFileService mockInputFileService = mock(InputFileService.class);
 
-        SpellCheckService spellcheckService = new SpellCheckService(mockDictionaryService, mockInputFileService);
+        SpellCheckService spellcheckService = new SpellCheckService(mockDictionaryService, "");
 
         int result1 = spellcheckService.calculateLevenshteinDistance("sitting", "kitten");
         assertEquals(3, result1);

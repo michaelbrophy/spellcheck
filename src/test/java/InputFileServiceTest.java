@@ -12,10 +12,7 @@ public class InputFileServiceTest {
     @Test
     public void testParseInputFileToInputFileWords() {
 
-        InputFileService inputFileService = new InputFileService("src/test/resources/testParseInputFileToInputFileWordsTest.txt");
-
         List<InputFileWord> inputFileWords = new ArrayList<>();
-
 
         // This is a bit messy, and could be cleaned up by pulling this data in through a file, but given the amount of
         // time worked on it, I thought this would be a fine enough and readable solution
@@ -36,6 +33,8 @@ public class InputFileServiceTest {
         inputFileWords.add(new InputFileWord("named", 3, 25));
         inputFileWords.add(new InputFileWord("Johnny", 3, 31));
 
-        assertEquals(inputFileWords, inputFileService.parseInputFileToInputFileWords());
+        String filePath = "src/test/resources/testParseInputFileToInputFileWordsTest.txt";
+
+        assertEquals(inputFileWords, InputFileService.parseInputFile(filePath));
     }
 }

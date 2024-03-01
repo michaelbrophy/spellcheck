@@ -6,17 +6,14 @@ import java.util.*;
 
 public class DictionaryService {
 
-    private final String filePath;
     private final Set<String> allValidWords;
 
     public DictionaryService(String filePath) {
-        this.filePath = filePath;
-
-        this.allValidWords = generateAllValidWordsFromFile();
+        this.allValidWords = generateAllValidWordsFromFile(filePath);
     }
 
     // Parse a dictionary file containing one word per line
-    private Set<String> generateAllValidWordsFromFile() {
+    private Set<String> generateAllValidWordsFromFile(String filePath) {
 
         Set<String> words = new HashSet<>();
 
@@ -37,10 +34,6 @@ public class DictionaryService {
 
     public boolean isWordInDictionary(String word) {
         return allValidWords.contains(word);
-    }
-
-    public String getFilePath() {
-        return filePath;
     }
 
     public Set<String> getAllValidWords() {

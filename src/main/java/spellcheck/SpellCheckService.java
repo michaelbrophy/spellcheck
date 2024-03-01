@@ -1,47 +1,43 @@
 package spellcheck;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class SpellCheckService {
 
     // Change this to adjust the flexibility of the word suggestion list
-    private final int WORD_SUGGESTION_DISTANCE_LIMIT = 2;
+    public static final int WORD_SUGGESTION_DISTANCE_LIMIT = 2;
 
     // Change this to adjust the limit of suggested words appearing for each misspelled word
-    private final int WORD_SUGGESTION_LIST_SIZE_LIMIT = 5;
+    public static final int WORD_SUGGESTION_LIST_SIZE_LIMIT = 5;
 
     // Change this to finish searching for word suggestions as soon as the WORD_SUGGESTION_LIST_SIZE_LIMIT is reached
-    private final boolean SHOULD_WORD_SUGGESTION_STOP_AT_SIZE_LIMIT = false;
+    public static final boolean SHOULD_WORD_SUGGESTION_STOP_AT_LIST_SIZE_LIMIT = false;
 
     private final DictionaryService dictionaryService;
-    private final InputFileService inputFileService;
 
-    private final List<MisspelledWord> allMisspelledWords;
+    private final List<MisspelledWord> misspelledWords;
 
-    public SpellCheckService(DictionaryService dictionaryService, InputFileService inputFileService) {
+    public SpellCheckService(DictionaryService dictionaryService, String filePath) {
         this.dictionaryService = dictionaryService;
-        this.inputFileService = inputFileService;
 
-        this.allMisspelledWords = spellCheckAllInputFileWords(findAllMisspelledInputFileWords());
+        this.misspelledWords = spellCheckWords(findMisspelledWords(filePath));
     }
 
-    private List<InputFileWord> findAllMisspelledInputFileWords() {
-        return inputFileService.getAllInputFileWords()
+    private List<InputFileWord> findMisspelledWords(String filePath) {
+
+        return InputFileService.parseInputFile(filePath)
                 .stream()
                 .filter(this::isWordMisspelled)
                 .toList();
     }
 
-    private List<MisspelledWord> spellCheckAllInputFileWords(List<InputFileWord> inputFileWords) {
-        List<MisspelledWord> misspelledWords = new ArrayList<>();
+    private List<MisspelledWord> spellCheckWords(List<InputFileWord> inputFileWords) {
 
-        for (InputFileWord inputFileWord : inputFileWords) {
-
-            Set<String> wordSuggestions = getWordSuggestions(inputFileWord.word());
-            misspelledWords.add(new MisspelledWord(inputFileWord, wordSuggestions));
-        }
-
-        return misspelledWords;
+        return inputFileWords.stream()
+                .filter(this::isWordMisspelled)
+                .map(misspelledWord -> new MisspelledWord(misspelledWord, getWordSuggestions(misspelledWord.word())))
+                .toList();
     }
 
     // Overloading this particular method to display that this could be convenient to have in a larger codebase
@@ -64,9 +60,7 @@ public class SpellCheckService {
     // as well as utilizing multithreading to speed this up, as it's what takes the longest to compute
     public Set<String> getWordSuggestions(String misspelledWord) {
 
-        PriorityQueue<WordSuggestion> wordSuggestions = new PriorityQueue<>(Comparator.comparingInt(WordSuggestion::levenshteinDistance));
-
-        int foundWordSuggestionCount = 0;
+        SortedSet<WordSuggestion> wordSuggestions = new TreeSet<>();
 
         for (String dictionaryWord : dictionaryService.getAllValidWords()) {
 
@@ -81,16 +75,16 @@ public class SpellCheckService {
 
             if (levenshteinDistance <= WORD_SUGGESTION_DISTANCE_LIMIT) {
                 wordSuggestions.add(new WordSuggestion(dictionaryWord, levenshteinDistance));
-                foundWordSuggestionCount++;
             }
 
-            if (SHOULD_WORD_SUGGESTION_STOP_AT_SIZE_LIMIT &&
-                    foundWordSuggestionCount >= WORD_SUGGESTION_LIST_SIZE_LIMIT) {
+            if (SHOULD_WORD_SUGGESTION_STOP_AT_LIST_SIZE_LIMIT
+                    && wordSuggestions.size() >= WORD_SUGGESTION_LIST_SIZE_LIMIT) {
                 break;
             }
         }
 
-        return trimPriorityQueueToWordSuggestionLimitAndConvertToSet(wordSuggestions);
+        return wordSuggestions.stream()
+                .map(WordSuggestion::word).collect(Collectors.toSet());
     }
 
     // Using algorithm based off of
@@ -135,28 +129,6 @@ public class SpellCheckService {
         return levenshteinDistance[wordOneLength][wordTwoLength];
     }
 
-    private Set<String> trimPriorityQueueToWordSuggestionLimitAndConvertToSet(PriorityQueue<WordSuggestion> wordSuggestions) {
-
-        Set<String> trimmedWordSuggestionsSet = new HashSet<>();
-
-        int count = 0;
-
-        for (WordSuggestion wordSuggestion : wordSuggestions) {
-            trimmedWordSuggestionsSet.add(wordSuggestion.word());
-            count++;
-
-            if (count >= WORD_SUGGESTION_LIST_SIZE_LIMIT) {
-                break;
-            }
-        }
-
-        return trimmedWordSuggestionsSet;
-    }
-
-    public List<MisspelledWord> getAllMisspelledWords() {
-        return allMisspelledWords;
-    }
-
     private int minimum(int... values) {
         if (values.length == 0) {
             throw new IllegalArgumentException("At least one integer must be provided.");
@@ -171,5 +143,9 @@ public class SpellCheckService {
         }
 
         return minimum;
+    }
+
+    public List<MisspelledWord> getMisspelledWords() {
+        return misspelledWords;
     }
 }

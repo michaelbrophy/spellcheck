@@ -1,25 +1,14 @@
 package spellcheck;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
 public class InputFileService {
 
-    private final String filePath;
-    private final List<InputFileWord> allInputFileWords;
-
-    public InputFileService(String filePath) {
-        this.filePath = filePath;
-
-        this.allInputFileWords = parseInputFileToInputFileWords();
-    }
-
-    public List<InputFileWord> parseInputFileToInputFileWords() {
+    public static List<InputFileWord> parseInputFile(String filePath) {
 
         List<InputFileWord> inputFileWords = new ArrayList<>();
 
@@ -32,7 +21,7 @@ public class InputFileService {
             while (scanner.hasNextLine()) {
                 String rawLine = scanner.nextLine();
 
-                inputFileWords.addAll(parseLineToInputFileWords(rawLine, lineCount));
+                inputFileWords.addAll(parseLine(rawLine, lineCount));
 
                 lineCount++;
             }
@@ -44,7 +33,7 @@ public class InputFileService {
         return inputFileWords;
     }
 
-    private List<InputFileWord> parseLineToInputFileWords(String line, int lineNumber) {
+    private static List<InputFileWord> parseLine(String line, int lineNumber) {
 
         List<InputFileWord> inputFileWords = new ArrayList<>();
 
@@ -64,34 +53,46 @@ public class InputFileService {
 
                 String trimmedWord = removePunctuationAndWhitespace(currentWord.toString());
 
+                int endIndexOfWord = i + 1;
+                int startIndexOfWord = endIndexOfWord - currentWordLength;
+
+                String wordContext = getContextForWord(line, startIndexOfWord, endIndexOfWord);
+
                 // Adding 1 to offset strings being 0-indexed
-                inputFileWords.add(new InputFileWord(trimmedWord, lineNumber, i - currentWordLength + 1));
+                inputFileWords.add(new InputFileWord(trimmedWord, wordContext, lineNumber, startIndexOfWord));
 
                 currentWord = new StringBuilder();
             }
         }
 
         // Slightly modified code from the block above to handle the last word in a line
+        // Normally I would look to reduce duplication here, but keeping this under time pressure
         if (!(currentWord.isEmpty() && currentWord.toString().isBlank())) {
 
             int currentWordLength = currentWord.toString().length();
 
             String trimmedWord = removePunctuationAndWhitespace(currentWord.toString());
 
-            // Adding 1 to offset strings being 0-indexed
-            inputFileWords.add(new InputFileWord(trimmedWord, lineNumber, line.length() - currentWordLength + 1));
-        }
+            int endIndexOfWord = line.length() + 1;
+            int startIndexOfWord = endIndexOfWord - currentWordLength;
 
-        //System.out.println("Line " + lineNumber + ": " + String.join(" ", inputFileWords.stream().map(InputFileWord::word).toArray(String[]::new)));
+            String wordContext = getContextForWord(line, startIndexOfWord, endIndexOfWord);
+
+            // Adding 1 to offset strings being 0-indexed
+            inputFileWords.add(new InputFileWord(trimmedWord, wordContext, lineNumber, startIndexOfWord));
+        }
 
         return inputFileWords;
     }
 
-    private String removePunctuationAndWhitespace(String input) {
-        return input.replaceAll("[\\p{P}\\s]+", "");
+    private static String getContextForWord(String line, int startIndexOfWord, int endIndexOfWord) {
+
+        // TODO: implement this
+
+        return "";
     }
 
-    public List<InputFileWord> getAllInputFileWords() {
-        return Collections.unmodifiableList(allInputFileWords);
+    private static String removePunctuationAndWhitespace(String input) {
+        return input.replaceAll("[\\p{P}\\s]+", "");
     }
 }

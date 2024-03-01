@@ -10,12 +10,9 @@ public class SpellChecker {
 
         DictionaryService dictionaryService = new DictionaryService(dictionaryFilePath);
 
-        InputFileService inputFileService = new InputFileService(inputFilePath);
+        SpellCheckService spellcheckService = new SpellCheckService(dictionaryService, inputFilePath);
 
-        SpellCheckService spellcheckService = new SpellCheckService(dictionaryService, inputFileService);
-
-        spellcheckService.getAllMisspelledWords()
-                .forEach(System.out::println);
+        spellcheckService.getMisspelledWords().forEach(System.out::println);
 
         long endTime = System.currentTimeMillis();
 
