@@ -12,7 +12,7 @@ public class SpellCheckService {
     public static final int WORD_SUGGESTION_LIST_SIZE_LIMIT = 5;
 
     // Change this to finish searching for word suggestions as soon as the WORD_SUGGESTION_LIST_SIZE_LIMIT is reached
-    public static final boolean SHOULD_WORD_SUGGESTION_STOP_AT_LIST_SIZE_LIMIT = false;
+    public static final boolean SHOULD_WORD_SUGGESTION_STOP_AT_LIST_SIZE_LIMIT = true;
 
     private final DictionaryService dictionaryService;
 
@@ -32,9 +32,10 @@ public class SpellCheckService {
                 .toList();
     }
 
-    private List<MisspelledWord> spellCheckWords(List<InputFileWord> inputFileWords) {
+    public List<MisspelledWord> spellCheckWords(List<InputFileWord> inputFileWords) {
 
-        return inputFileWords.stream()
+        return inputFileWords
+                .stream()
                 .filter(this::isWordMisspelled)
                 .map(misspelledWord -> new MisspelledWord(misspelledWord, getWordSuggestions(misspelledWord.word())))
                 .toList();
@@ -74,6 +75,7 @@ public class SpellCheckService {
             int levenshteinDistance = calculateLevenshteinDistance(misspelledWord, dictionaryWord);
 
             if (levenshteinDistance <= WORD_SUGGESTION_DISTANCE_LIMIT) {
+
                 wordSuggestions.add(new WordSuggestion(dictionaryWord, levenshteinDistance));
             }
 
@@ -83,8 +85,23 @@ public class SpellCheckService {
             }
         }
 
-        return wordSuggestions.stream()
-                .map(WordSuggestion::word).collect(Collectors.toSet());
+        return trimWordSuggestionsToListSizeLimit(wordSuggestions)
+                .stream()
+                .map(WordSuggestion::word)
+                .collect(Collectors.toSet());
+    }
+
+    private Set<WordSuggestion> trimWordSuggestionsToListSizeLimit(Set<WordSuggestion> wordSuggestions) {
+
+        Set<WordSuggestion> trimmedWordSuggestions = new TreeSet<>();
+        Iterator<WordSuggestion> wordSuggestionIterator = wordSuggestions.iterator();
+
+        while (wordSuggestionIterator.hasNext() && trimmedWordSuggestions.size() < WORD_SUGGESTION_LIST_SIZE_LIMIT) {
+            WordSuggestion wordSuggestion = wordSuggestionIterator.next();
+            trimmedWordSuggestions.add(wordSuggestion);
+        }
+
+        return trimmedWordSuggestions;
     }
 
     // Using algorithm based off of

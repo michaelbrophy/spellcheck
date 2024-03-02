@@ -9,6 +9,12 @@ public record WordSuggestion (String word, int levenshteinDistance) implements C
             return -1;
         }
 
-        return Integer.compare(levenshteinDistance, other.levenshteinDistance);
+        if (levenshteinDistance == other.levenshteinDistance) {
+
+            return word.compareTo(other.word);
+        } else {
+
+            return Integer.compare(levenshteinDistance, other.levenshteinDistance);
+        }
     }
 }

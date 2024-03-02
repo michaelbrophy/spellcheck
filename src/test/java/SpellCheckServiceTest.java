@@ -1,32 +1,42 @@
 import org.junit.Test;
+import org.mockito.MockedStatic;
 import spellcheck.DictionaryService;
+import spellcheck.InputFileService;
 import spellcheck.SpellCheckService;
 
+import java.util.ArrayList;
+
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 public class SpellCheckServiceTest {
 
     @Test
     public void testCalculateLevenshteinDistance() {
 
-        DictionaryService mockDictionaryService = mock(DictionaryService.class);
+        try(MockedStatic<InputFileService> inputFileServiceMockedStatic = mockStatic(InputFileService.class)) {
+            inputFileServiceMockedStatic.when(() ->
+                    InputFileService.parseInputFile(any())).thenReturn(new ArrayList<>());
 
-        SpellCheckService spellcheckService = new SpellCheckService(mockDictionaryService, "");
+            DictionaryService mockDictionaryService = mock(DictionaryService.class);
 
-        int result1 = spellcheckService.calculateLevenshteinDistance("sitting", "kitten");
-        assertEquals(3, result1);
+            SpellCheckService spellcheckService = new SpellCheckService(mockDictionaryService, "");
 
-        int result2 = spellcheckService.calculateLevenshteinDistance("Saturday", "Sunday");
-        assertEquals(3, result2);
+            int result1 = spellcheckService.calculateLevenshteinDistance("sitting", "kitten");
+            assertEquals(3, result1);
 
-        int result3 = spellcheckService.calculateLevenshteinDistance("", "kitten");
-        assertEquals(6, result3);
+            int result2 = spellcheckService.calculateLevenshteinDistance("Saturday", "Sunday");
+            assertEquals(3, result2);
 
-        int result4 = spellcheckService.calculateLevenshteinDistance("kitten", "");
-        assertEquals(6, result4);
+            int result3 = spellcheckService.calculateLevenshteinDistance("", "kitten");
+            assertEquals(6, result3);
 
-        int result5 = spellcheckService.calculateLevenshteinDistance("siTTIng", "kIttEn");
-        assertEquals(3, result5);
+            int result4 = spellcheckService.calculateLevenshteinDistance("kitten", "");
+            assertEquals(6, result4);
+
+            int result5 = spellcheckService.calculateLevenshteinDistance("siTTIng", "kIttEn");
+            assertEquals(3, result5);
+        }
     }
 }

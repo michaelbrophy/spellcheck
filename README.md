@@ -36,10 +36,12 @@ most likely using a "sliding window" type of approach. I would've also potential
 cleanly provide context to _only_ the misspelled words instead of every word, as I'm doing now. I opted to not blur the
 lines of my **SpellCheckService** and **InputFileService** over the small performance optimization of only providing
 context for misspelled words.
-10. I would have chosen a different word suggestion algorithm given more time because after implementing and testing 
+10. This program is only providing context on a line-by-line basis, meaning it will not go to the previous or next line 
+for context purposes. Given more time, I would have implemented that functionality.
+11. I would have chosen a different word suggestion algorithm given more time because after implementing and testing 
 further, I realized that Levenshtein heavily favors insertions and deletions over substitutions. This means that 
 transposing two letters, which anecdotally seem to be the most common type of typos, will be given accurate
 suggestions much less frequently as each transposition commonly causes a levenshtein distance of 2 from the desired 
-word.
-11. For spellchecking proper nouns, I am simply ignoring words that start with an uppercase letter. Given more time, I 
+word. 
+12. For spellchecking proper nouns, I am simply ignoring words that start with an uppercase letter. Given more time, I 
 would try to implement an intelligent context analysis approach.
