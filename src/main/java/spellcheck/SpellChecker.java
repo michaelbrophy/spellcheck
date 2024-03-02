@@ -5,6 +5,11 @@ public class SpellChecker {
 
         long startTime = System.currentTimeMillis();
 
+        if (args.length < 2) {
+            throw new IllegalArgumentException("Too few arguments. Please take a look at the \"Running the Program\" " +
+                    "section in the README.");
+        }
+
         String dictionaryFilePath = args[0];
         String inputFilePath = args[1];
 
