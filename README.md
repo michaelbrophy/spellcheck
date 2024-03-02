@@ -18,3 +18,17 @@ shows all instances of a misspelled word under one block.
 was a concern under normal circumstances, I would break the processing of the file into smaller chunks.
 8. I would normally include a config file instead of hardcoding constants for configuration values, but chose to do the
 latter given the time constraint.
+9. I am making a soft assumption that the input file does not contain multiple whitespace characters next to each other
+for the purpose of simplifying the process of providing context to the misspelled words. Given more time, I would've
+opted to process context using an in-place method that would preserve the line as is and reduce duplicated processing,
+most likely using a "sliding window" type of approach. I would've also potentially re-organized my files in order to 
+cleanly provide context to _only_ the misspelled words instead of every word, as I'm doing now. I opted to not blur the
+lines of my **SpellCheckService** and **InputFileService** over the small performance optimization of only providing
+context for misspelled words.
+10. I would have chosen a different word suggestion algorithm given more time because after implementing and testing 
+further, I realized that Levenshtein heavily favors insertions and deletions over substitutions. This means that 
+transposing two letters, which anecdotally seem to be the most common type of typos, will be given accurate
+suggestions much less frequently as each transposition commonly causes a levenshtein distance of 2 from the desired 
+word.
+11. For spellchecking proper nouns, I am simply ignoring words that start with an uppercase letter. Given more time, I 
+would try to implement an intelligent context analysis approach.

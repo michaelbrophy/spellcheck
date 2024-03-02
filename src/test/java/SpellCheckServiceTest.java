@@ -1,6 +1,5 @@
 import org.junit.Test;
 import spellcheck.DictionaryService;
-import spellcheck.InputFileService;
 import spellcheck.SpellCheckService;
 
 import static org.junit.Assert.assertEquals;

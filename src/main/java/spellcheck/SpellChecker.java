@@ -12,7 +12,10 @@ public class SpellChecker {
 
         SpellCheckService spellcheckService = new SpellCheckService(dictionaryService, inputFilePath);
 
-        spellcheckService.getMisspelledWords().forEach(System.out::println);
+        spellcheckService.getMisspelledWords().forEach(misspelledWord -> {
+            System.out.println(misspelledWord);
+            System.out.println();
+        });
 
         long endTime = System.currentTimeMillis();
 

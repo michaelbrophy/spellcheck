@@ -3,10 +3,15 @@ package spellcheck;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+import java.util.function.Predicate;
 
 public class InputFileService {
+
+    // Change this to adjust the number of words appearing in the context of generated InputFileWords
+    public static final int NUMBER_OF_CONTEXT_WORDS_ON_EITHER_SIDE = 2;
 
     public static List<InputFileWord> parseInputFile(String filePath) {
 
@@ -35,8 +40,17 @@ public class InputFileService {
 
     private static List<InputFileWord> parseLine(String line, int lineNumber) {
 
+        if (line.isBlank()) {
+            return new ArrayList<>();
+        }
+
         List<InputFileWord> inputFileWords = new ArrayList<>();
 
+        // Using this as a helper for my simplistic approach to providing context given the time constraint
+        List<String> rawWordsInLine = Arrays.stream(line.split(" "))
+                .filter(Predicate.not(String::isBlank)).toList();
+
+        int currentWordInLine = 0;
         StringBuilder currentWord = new StringBuilder();
 
         for (int i = 0; i < line.length(); i++) {
@@ -47,7 +61,7 @@ public class InputFileService {
                 continue;
             }
 
-            if (!(currentWord.isEmpty() && currentWord.toString().isBlank())) {
+            if (!currentWord.toString().isBlank()) {
 
                 int currentWordLength = currentWord.toString().length();
 
@@ -56,11 +70,12 @@ public class InputFileService {
                 int endIndexOfWord = i + 1;
                 int startIndexOfWord = endIndexOfWord - currentWordLength;
 
-                String wordContext = getContextForWord(line, startIndexOfWord, endIndexOfWord);
+                String wordContext = getContextForWord(rawWordsInLine, currentWordInLine);
 
                 // Adding 1 to offset strings being 0-indexed
                 inputFileWords.add(new InputFileWord(trimmedWord, wordContext, lineNumber, startIndexOfWord));
 
+                currentWordInLine++;
                 currentWord = new StringBuilder();
             }
         }
@@ -76,7 +91,7 @@ public class InputFileService {
             int endIndexOfWord = line.length() + 1;
             int startIndexOfWord = endIndexOfWord - currentWordLength;
 
-            String wordContext = getContextForWord(line, startIndexOfWord, endIndexOfWord);
+            String wordContext = getContextForWord(rawWordsInLine, currentWordInLine);
 
             // Adding 1 to offset strings being 0-indexed
             inputFileWords.add(new InputFileWord(trimmedWord, wordContext, lineNumber, startIndexOfWord));
@@ -85,11 +100,14 @@ public class InputFileService {
         return inputFileWords;
     }
 
-    private static String getContextForWord(String line, int startIndexOfWord, int endIndexOfWord) {
+    private static String getContextForWord(List<String> rawWordsInLine, int currentWordInLine) {
 
-        // TODO: implement this
+        int contextStartWordIndex = Math.max(0, currentWordInLine - NUMBER_OF_CONTEXT_WORDS_ON_EITHER_SIDE);
+        int contextEndWordIndex =
+                Math.min(rawWordsInLine.size(), currentWordInLine + NUMBER_OF_CONTEXT_WORDS_ON_EITHER_SIDE + 1);
 
-        return "";
+        // Using an approach to providing context that eliminates extra whitespace given the time constraint
+        return String.join(" ", rawWordsInLine.subList(contextStartWordIndex, contextEndWordIndex));
     }
 
     private static String removePunctuationAndWhitespace(String input) {
