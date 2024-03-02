@@ -1,12 +1,12 @@
 ## Prerequisites
 
-- If you would like to build the JAR file yourself, you will need to install the Java Development Kit (JDK 19.0.1)
+- If you would like to build a JAR file yourself, you will need to install the Java Development Kit (JDK 19.0.1)
 on your machine
 - If you would only like to run the provided JAR file, you will just need Java installed
 
 ## Running the Program
 
-To run this file, run the following command while being in the root directory of this project: \
+To execute this program, run the following command while being in the root directory of this project: \
 `java -jar out/artifacts/spellcheck_jar/spellcheck.jar <PATH TO DICTIONARY FILE> <PATH TO INPUT FILE>` \
 Make sure to replace the two arguments with the paths to your respective files. For an example output, you can use the
 two files included in this project by running the command:
