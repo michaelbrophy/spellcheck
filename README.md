@@ -1,3 +1,14 @@
+## About the Program
+
+This is a spell checker program that takes two inputs: 
+1. A dictionary file that should contain all words that are considered "valid", with one word per line and no 
+whitespace.
+2. An input file that will have every word in it checked against the dictionary file.
+
+The program will output all words that are not in the dictionary file (with some caveats mentioned below) with some
+suggested words that get calculated according to a configurable Levenshtein algorithm, some context surrounding the 
+word, and the position of the word in the file in the form of a line and a column number.
+
 ## Prerequisites
 
 - If you would like to build a JAR file yourself, you will need to install the Java Development Kit (JDK 19.0.1)
